@@ -100,6 +100,39 @@ download host cannot point your copy of Lothal at a payload that is not ours.
 
 ---
 
+## Activation, and the one thing we store
+
+Lothal asks you to activate it once, with a Google sign-in, before it opens.
+
+**What is stored: your email address. That is the whole list.** No name, no telephone number, no
+usage data, no telemetry, and nothing about what you build or fly. It is held in Google Firebase
+Authentication, and it is used for one purpose — telling you when a new version of Lothal is
+released. It is not sold, not shared with anyone, and not used for anything else.
+
+How it works:
+
+1. You open the activation page and sign in with Google.
+2. The page gives you an activation key — a small signed file.
+3. You paste it into Lothal, or open the downloaded `.lothalkey` file.
+
+The key is verified on your own machine, using arithmetic and a key built into the application.
+**Lothal never contacts the internet to check it** — not when you activate, and not at any launch
+afterwards. Once activated, Lothal works offline permanently, and it keeps working even if this
+project's servers go away entirely. You need a connection for step 1 and never again.
+
+Signing in again always returns the same key, so you can activate as many of your own machines as
+you like, and losing the key costs you nothing more than signing in a second time.
+
+Your address is shown in the application as `Activated — you@example.com`, so you can always see
+which account a copy is activated against.
+
+**To have your address removed**, [open an issue](https://github.com/OneWeekendAI/lothal-public/issues)
+or contact us at the address in [NOTICE](NOTICE). It is deleted from the authentication table, and
+your existing installation carries on working — because nothing is checked at launch, removal
+cannot break a copy of Lothal you already activated.
+
+---
+
 ## Requirements
 
 - **macOS** 11 Big Sur or later, Intel or Apple Silicon

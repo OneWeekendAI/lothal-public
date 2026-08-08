@@ -18,6 +18,24 @@ NOT PERMITTED
   Removal or alteration of this notice or of any copyright or attribution notice.
   Use of the Lothal name or marks to endorse or promote anything.
 
+ACTIVATION AND PERSONAL DATA
+
+  Lothal requires a one-time activation using a Google sign-in. The only personal data
+  collected or stored is your email address, together with the verification status and
+  creation date that the authentication provider records alongside it. It is held in Google
+  Firebase Authentication.
+
+  It is used solely to notify you of new releases of Lothal. It is not sold, rented, shared
+  with third parties, or used for any other purpose. No usage data, telemetry or information
+  about your designs or flights is collected or transmitted at any time.
+
+  Your activation key is verified locally on your own machine. Lothal makes no network request
+  to validate it, either at activation or on any subsequent launch.
+
+  To have your email address deleted, contact <CONTACT ADDRESS — SET BEFORE PUBLISHING> or open
+  an issue at https://github.com/OneWeekendAI/lothal-public/issues. Deletion does not affect
+  any installation you have already activated.
+
 NO WARRANTY
 
   Lothal simulates the flight of aircraft you describe to it. Its physics, its component
