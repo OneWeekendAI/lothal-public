@@ -15,15 +15,36 @@ flight model runs at 1 kHz off measured manufacturer thrust data.
 
 ---
 
+## ⚠️ Beta — under active development
+
+**Lothal is pre-1.0 and should be treated as a beta.** It is usable and the physics is real, but
+the software is young and the rough edges are not evenly distributed. Specifically:
+
+- **Not signed** by Apple. macOS will warn you.
+  [What the warning means](#about-the-security-warnings).
+- **Saved builds and flight logs may not survive an upgrade.** The on-disk formats are still
+  changing between releases, and there is no migration path yet. Do not treat Lothal as the only
+  copy of anything you care about.
+- **Component data is verified against manufacturer sources but the catalog is small.** If a part
+  you own is missing, that is expected at this stage.
+- **Interfaces will change.** Panels, controls and file layouts are still moving.
+
+None of this makes the simulation less honest — the flight model is the part that gets the most
+scrutiny. It means the software around it is still settling. Bug reports are genuinely useful
+right now; see [Feedback](#feedback).
+
+---
+
 ## Download
 
-Current release: **v0.2.0**, macOS 11+ (Universal — Intel and Apple Silicon).
+Current release: **v0.2.0** — macOS 11+ (Universal, Intel and Apple Silicon).
 
-**Windows is still on v0.1.0.** v0.2.0 was packaged for macOS only, so the Windows block below
-deliberately stays on the older version — it is the newest Windows build that exists.
-
-Each block below downloads the release, checks it against the published SHA-256, and installs it.
+The block below downloads the release, checks it against the published SHA-256, and installs it.
 Paste the whole thing; it is written to stop rather than continue if the checksum does not match.
+
+The macOS block resolves the current version by itself, so it does not go stale — the same
+command installs today's release and upgrades you to tomorrow's. It asks for your password
+because writing to `/Applications` requires it.
 
 ### macOS
 
@@ -46,40 +67,14 @@ Use `ditto`, not the Finder or `unzip`, to unpack it. `ditto` is how the archive
 extracts the app bundle straight to `/Applications` without leaving a `__MACOSX` folder behind,
 and it is the extraction path the release is tested against.
 
-### Windows (PowerShell)
-
-Still v0.1.0 — see the note above.
-
-```powershell
-$Ver = "0.1.0"
-$Zip = "Lothal-$Ver-windows-x64.zip"
-Invoke-WebRequest "https://dl.meetdev.in/v$Ver/$Zip" -OutFile $Zip
-Invoke-WebRequest "https://dl.meetdev.in/v$Ver/SHA256SUMS.txt" -OutFile "SHA256SUMS.txt"
-
-$Want = (Select-String -Path SHA256SUMS.txt -Pattern "windows-x64").Line.Split(" ")[0]
-$Got  = (Get-FileHash $Zip -Algorithm SHA256).Hash
-if ($Got -ine $Want) { throw "CHECKSUM FAILED - do not run it" }
-
-Expand-Archive $Zip -DestinationPath "$env:LOCALAPPDATA\Lothal" -Force
-Remove-Item "$env:LOCALAPPDATA\Lothal\._*" -ErrorAction SilentlyContinue
-& "$env:LOCALAPPDATA\Lothal\Lothal.exe"
-```
-
-The archive is built on a Mac, so it contains two stray `._Lothal.*` metadata files. They do
-nothing on Windows; the `Remove-Item` line above just tidies them away.
-
-### Always-current links
+### Always-current link
 
 This redirects to whatever the newest release is, so it does not go stale — useful for a browser
 or a script that should not pin a version:
 
 - **macOS** — <https://dl.meetdev.in/latest/macos>
 
-There is no `latest/windows` while v0.2.0 is macOS-only; it would have to resolve to a v0.1.0
-payload, and a link called "latest" that quietly hands over an older release is worse than no
-link. Use the versioned Windows block above.
-
-It redirects to a versioned filename. If you fetch them with `curl`, use `-o` to name the file
+It redirects to a versioned filename. If you fetch it with `curl`, use `-o` to name the file
 yourself: `curl -fLo Lothal.zip https://dl.meetdev.in/latest/macos`, because `curl -O` would save
 it as a file literally called `macos`.
 
@@ -87,9 +82,9 @@ it as a file literally called `macos`.
 
 ## About the security warnings
 
-Lothal is **not signed** by Apple or Microsoft. Code signing certificates cost money per year,
-and this is an early release — that is coming, but it is not here yet. Both operating systems
-will warn you, and you should know exactly what the warning means before you click past it.
+Lothal is **not signed** by Apple. Code signing certificates cost money per year, and this is an
+early release — that is coming, but it is not here yet. macOS will warn you, and you should know
+exactly what the warning means before you click past it.
 
 **The warning is real, and it is not specific to Lothal.** It says the OS cannot verify who
 published this software. That is true. The way to close the gap yourself is the checksum, which
@@ -100,16 +95,43 @@ hash matches, the file you have is the file that was published.
 downloaded from a browser or `curl`. The `xattr -dr com.apple.quarantine` line above clears that.
 If you installed it some other way, right-click the app and choose **Open** once instead.
 
-**Windows.** SmartScreen will show **"Windows protected your PC"** the first time. Click
-**More info** → **Run anyway**. This persists until the download builds reputation or an EV
-certificate exists.
-
 ### Updates
 
-Lothal checks for new releases on startup and shows a one-line bar when one exists. It never
-downloads or installs anything on its own — the bar opens the release page in your browser and
-you decide from there. The release manifest is cryptographically signed, so a compromised
-download host cannot point your copy of Lothal at a payload that is not ours.
+**Lothal notifies you about updates. It does not install them.** Three seconds after launch it
+fetches a small signed file, and if a newer release exists it shows a one-line bar at the top of
+the window. Clicking it opens the release page in your browser. That is the whole mechanism —
+nothing is downloaded, nothing is replaced, and no installer runs behind your back.
+
+How the check works:
+
+1. Lothal fetches `https://dl.meetdev.in/latest.json` — a few hundred bytes naming the current
+   version, its download URL, and its SHA-256.
+2. It verifies an **RSA signature** over that file, using a public key compiled into the
+   application. The private half lives on one machine and is never on the download server or in
+   the repository.
+3. If the signature verifies and the version is newer than yours, the bar appears.
+
+The signature is the part that matters, and it is worth being precise about why the SHA-256
+alone would not do. A hash published next to the file it describes proves only that your
+download was not corrupted in transit — anyone who could replace the zip could replace the hash
+in the same breath. The signature is made somewhere the download host cannot reach, so whoever
+controls that host can delete releases or serve you an old one, but cannot point your copy of
+Lothal at a payload of their choosing.
+
+**Every failure is silent and means "no update".** Offline, DNS hijacked, host down, file
+malformed, signature invalid — all produce the same result: no bar. Lothal will never show you
+an update prompt on the strength of a file that did not verify, and it will never tell you a
+version check failed, because there is nothing useful for you to do about it.
+
+**Why there is no self-updater.** Partly principle: an unsigned application that downloads and
+swaps its own executable is handing every install a code path that writes new binaries to disk,
+and that is a large thing to ship on a protection that has never been tested against a real
+attacker. Partly mechanics: rewriting an `.app`
+inside `/Applications` needs privileges Lothal has no business holding. The signed manifest is
+the foundation for doing this properly later; today it is deliberately just a link.
+
+To update, re-run the install command from [Download](#download) above. It always resolves to the
+current release, so the same command upgrades you.
 
 ---
 
@@ -149,7 +171,6 @@ cannot break a copy of Lothal you already activated.
 ## Requirements
 
 - **macOS** 11 Big Sur or later, Intel or Apple Silicon
-- **Windows** 10 or later, 64-bit
 - A GPU with Vulkan support (anything from roughly 2016 onward)
 - **A gamepad is strongly recommended.** Keyboard input is digital — usable for testing,
   not a way to fly well.
