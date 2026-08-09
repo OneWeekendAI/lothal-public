@@ -28,12 +28,17 @@ Paste the whole thing; it is written to stop rather than continue if the checksu
 ### macOS
 
 ```bash
-VER=0.2.0
-curl -fLO "https://dl.meetdev.in/v$VER/Lothal-$VER-macos-universal.zip"
+set -e
+cd "$(mktemp -d)"
+ZIP_URL=$(curl -fsSLI -o /dev/null -w '%{url_effective}' https://dl.meetdev.in/latest/macos)
+VER=$(echo "$ZIP_URL" | sed -n 's#.*/v\([^/]*\)/.*#\1#p')
+[ -n "$VER" ] || { echo "could not resolve the current version"; exit 1; }
+ZIP="Lothal-$VER-macos-universal.zip"
+curl -fLO "https://dl.meetdev.in/v$VER/$ZIP"
 curl -fLO "https://dl.meetdev.in/v$VER/SHA256SUMS.txt"
 shasum -a 256 -c --ignore-missing SHA256SUMS.txt || { echo "CHECKSUM FAILED — do not open it"; return 2>/dev/null || exit 1; }
-ditto -x -k "Lothal-$VER-macos-universal.zip" /Applications
-xattr -dr com.apple.quarantine /Applications/Lothal.app
+sudo ditto -x -k "$ZIP" /Applications
+sudo xattr -dr com.apple.quarantine /Applications/Lothal.app
 open /Applications/Lothal.app
 ```
 
