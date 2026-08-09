@@ -17,7 +17,10 @@ flight model runs at 1 kHz off measured manufacturer thrust data.
 
 ## Download
 
-Current release: **v0.1.0**. macOS 11+ (Universal — Intel and Apple Silicon), Windows 10+ (x64).
+Current release: **v0.2.0**, macOS 11+ (Universal — Intel and Apple Silicon).
+
+**Windows is still on v0.1.0.** v0.2.0 was packaged for macOS only, so the Windows block below
+deliberately stays on the older version — it is the newest Windows build that exists.
 
 Each block below downloads the release, checks it against the published SHA-256, and installs it.
 Paste the whole thing; it is written to stop rather than continue if the checksum does not match.
@@ -25,7 +28,7 @@ Paste the whole thing; it is written to stop rather than continue if the checksu
 ### macOS
 
 ```bash
-VER=0.1.0
+VER=0.2.0
 curl -fLO "https://dl.meetdev.in/v$VER/Lothal-$VER-macos-universal.zip"
 curl -fLO "https://dl.meetdev.in/v$VER/SHA256SUMS.txt"
 shasum -a 256 -c --ignore-missing SHA256SUMS.txt || { echo "CHECKSUM FAILED — do not open it"; return 2>/dev/null || exit 1; }
@@ -39,6 +42,8 @@ extracts the app bundle straight to `/Applications` without leaving a `__MACOSX`
 and it is the extraction path the release is tested against.
 
 ### Windows (PowerShell)
+
+Still v0.1.0 — see the note above.
 
 ```powershell
 $Ver = "0.1.0"
@@ -60,13 +65,16 @@ nothing on Windows; the `Remove-Item` line above just tidies them away.
 
 ### Always-current links
 
-These redirect to whatever the newest release is, so they do not go stale — useful for a browser
+This redirects to whatever the newest release is, so it does not go stale — useful for a browser
 or a script that should not pin a version:
 
 - **macOS** — <https://dl.meetdev.in/latest/macos>
-- **Windows** — <https://dl.meetdev.in/latest/windows>
 
-They redirect to a versioned filename. If you fetch them with `curl`, use `-o` to name the file
+There is no `latest/windows` while v0.2.0 is macOS-only; it would have to resolve to a v0.1.0
+payload, and a link called "latest" that quietly hands over an older release is worse than no
+link. Use the versioned Windows block above.
+
+It redirects to a versioned filename. If you fetch them with `curl`, use `-o` to name the file
 yourself: `curl -fLo Lothal.zip https://dl.meetdev.in/latest/macos`, because `curl -O` would save
 it as a file literally called `macos`.
 
