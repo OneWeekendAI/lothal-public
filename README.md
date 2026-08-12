@@ -20,7 +20,8 @@ flight model runs at 1 kHz off measured manufacturer thrust data.
 **Lothal is pre-1.0 and should be treated as a beta.** It is usable and the physics is real, but
 the software is young and the rough edges are not evenly distributed. Specifically:
 
-- **Not signed** by Apple or Microsoft. macOS and Windows will both warn you.
+- **Not signed** by Apple or Microsoft. macOS and Windows will both warn you; Linux will not
+  warn you at all, which is not the same as it being verified.
   [What the warning means](#about-the-security-warnings).
 - **Saved builds and flight logs may not survive an upgrade.** The on-disk formats are still
   changing between releases, and there is no migration path yet. Do not treat Lothal as the only
@@ -121,6 +122,7 @@ or a script that should not pin a version:
 
 - **macOS** — <https://dl.meetdev.in/latest/macos>
 - **Windows** — <https://dl.meetdev.in/latest/windows>
+- **Linux** — <https://dl.meetdev.in/latest/linux>
 
 It redirects to a versioned filename. If you fetch it with `curl`, use `-o` to name the file
 yourself: `curl -fLo Lothal.zip https://dl.meetdev.in/latest/macos`, because `curl -O` would save
