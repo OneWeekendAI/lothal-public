@@ -189,8 +189,11 @@ attacker. Partly mechanics: rewriting an `.app`
 inside `/Applications` needs privileges Lothal has no business holding. The signed manifest is
 the foundation for doing this properly later; today it is deliberately just a link.
 
-To update, re-run the install command from [Download](#download) above. It always resolves to the
-current release, so the same command upgrades you.
+To update, re-run the install command from [Download](#download) above. On macOS it resolves the
+current release by itself, so the same command upgrades you. The Windows and Linux blocks pin a
+version — change `VER` to the one named on the release page first, or fetch the
+[always-current link](#always-current-link) for your platform and check it against that release's
+`SHA256SUMS.txt`.
 
 ---
 
