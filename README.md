@@ -98,13 +98,15 @@ cd Lothal
 
 The Linux build is an x86-64 ELF executable — no installer, no package. It is unsigned like the
 other platforms, but Linux does not block it at the OS level, so the checksum is your only guard
-against a tampered download. This block pins the current release like the Windows one; bump it
-when the version line above does.
+against a tampered download. Like the macOS block, this one resolves the current version by
+itself, so it does not go stale.
 
 ```bash
 set -e
 cd "$(mktemp -d)"
-VER="0.2.0"
+ZIP_URL=$(curl -fsSLI -o /dev/null -w '%{url_effective}' https://dl.meetdev.in/latest/linux)
+VER=$(echo "$ZIP_URL" | sed -n 's#.*/v\([^/]*\)/.*#\1#p')
+[ -n "$VER" ] || { echo "could not resolve the current version"; exit 1; }
 ZIP="Lothal-$VER-linux-x64.zip"
 curl -fLO "https://dl.meetdev.in/v$VER/$ZIP"
 curl -fLO "https://dl.meetdev.in/v$VER/SHA256SUMS.txt"
@@ -116,6 +118,17 @@ chmod +x Lothal.x86_64
 
 Requires `unzip` if it is not already installed (`sudo apt install unzip` on Debian/Ubuntu,
 `sudo dnf install unzip` on Fedora).
+
+That block runs Lothal from a temporary directory, so it is a try-it, not an install — the copy
+is gone on reboot. To keep it, move all three extracted files together:
+
+```bash
+mkdir -p ~/.local/share/lothal && mv Lothal.x86_64 Lothal.pck liblothal_core.so ~/.local/share/lothal/
+```
+
+They have to stay in the same directory. `Lothal.x86_64` on its own starts and then exits
+complaining about a missing main scene, because the `.pck` beside it is the game itself and
+`liblothal_core.so` is the flight model.
 
 ### Always-current link
 
