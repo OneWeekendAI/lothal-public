@@ -38,6 +38,8 @@ right now; see [Feedback](#feedback).
 
 ## Download
 
+![](announcement-v0.2.0.png)
+
 Current release: **v0.2.0** — macOS 11+ (Universal, Intel and Apple Silicon), Windows 10/11 x64, and Linux x86-64.
 
 The block below downloads the release, checks it against the published SHA-256, and installs it.
